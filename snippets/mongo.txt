@@ -1,0 +1,4 @@
+  "Mongo": {
+    "Conexao": "{{inputs.string_conexao}}",
+    "Banco": "stack-spot"
+  },

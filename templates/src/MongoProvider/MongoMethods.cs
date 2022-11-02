@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MongoProvider
@@ -43,39 +44,42 @@ namespace MongoProvider
             }
         }
 
-        public async Task InsertOneAsync(T document)
+        public Task InsertOneAsync(T document, CancellationToken cancellationToken = default)
         {
-            await collection.InsertOneAsync(document);
+            return collection.InsertOneAsync(document, null, cancellationToken);
         }
 
-        public async Task<T> FindAsync(Expression<Func<T, bool>> filter)
+        public Task<T> FindAsync(Expression<Func<T, bool>> filter, CancellationToken cancellationToken = default)
         {
-            return await collection.FindSync<T>(filter).FirstOrDefaultAsync();
+            return collection
+                .FindSync<T>(filter, null, cancellationToken)
+                .FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<T>> FindAllAsync(Expression<Func<T, bool>> filter)
+        public Task<List<T>> FindAllAsync(Expression<Func<T, bool>> filter, CancellationToken cancellationToken = default)
         {
-            return await collection.Find(filter).ToListAsync();
+            return collection
+                .FindSync<T>(filter, null, cancellationToken)
+                .ToListAsync();
         }
 
-        public async Task ReplaceOneAsync(Expression<Func<T, bool>> filter, T data)
+        public async Task ReplaceOneAsync(Expression<Func<T, bool>> filter, T data, CancellationToken cancellationToken = default)
         {
             var persistedData = await FindAsync(filter);
             if (persistedData != null)
             {
-                await collection.ReplaceOneAsync(filter, data);
+                await collection.ReplaceOneAsync(filter, data, default(ReplaceOptions), cancellationToken);
             }
         }
 
-        public async Task DeleteOneAsync(Expression<Func<T, bool>> filter)
+        public Task DeleteOneAsync(Expression<Func<T, bool>> filter, CancellationToken cancellationToken = default)
         {
-            await collection.DeleteOneAsync(filter);
+            return collection.DeleteOneAsync(filter, null, cancellationToken);
         }
 
-        public async Task InsertManyAsync(IEnumerable<T> documents)
+        public Task InsertManyAsync(IEnumerable<T> documents, CancellationToken cancellationToken = default)
         {
-            await collection.InsertManyAsync(documents);
+            return collection.InsertManyAsync(documents);
         }
     }
-
 }

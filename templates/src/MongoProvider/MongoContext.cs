@@ -24,12 +24,12 @@ namespace MongoProvider
 
         private MongoClient GetMongoClient()
         {
-            return new MongoClient(_mongoConfig.Connection);
+            return new MongoClient($"{_mongoConfig.Conexao}/{_mongoConfig.Banco}");
         }
 
         private IMongoDatabase GetMongoDatabase()
         {
-            return Client.GetDatabase("StockMarket");
+            return Client.GetDatabase(_mongoConfig.Banco);
         }
 
         public IMongoCollection<T> GetCollection<T>(string name)
@@ -37,5 +37,4 @@ namespace MongoProvider
             return Database.GetCollection<T>(name);
         }
     }
-
 }

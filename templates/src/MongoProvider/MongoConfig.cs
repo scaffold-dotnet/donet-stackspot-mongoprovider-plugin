@@ -2,11 +2,7 @@
 {
     public class MongoConfig
     {
-        public MongoConfig(string connection)
-        {
-            Connection = connection;
-        }
-
-        public string Connection { get; }
+        public string Conexao { get; set; }
+        public string Banco { get; set; }
     }
 }

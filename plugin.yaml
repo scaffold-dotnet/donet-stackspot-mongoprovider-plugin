@@ -1,31 +1,106 @@
 name: donet-stackspot-mongoprovider-plugin
-description: Describe your plugin explaining its purpose
+description: Provedor de acesso ao bando NoSql mongoDb
 display-name: donet-stackspot-mongoprovider-plugin
 picture: plugin.png
 category: backend # Ref: https://docs.stackspot.com/latest/docs/creators-guide/yaml/#category
 compatibility:
-  - java
-  - spring
+  - dotnet 6
+  - dotnet 5
+  - dotnet core 3.1
 about: docs/about.md
 usage: docs/usage.md
 use-case: docs/use-case.md
 implementation: docs/implementation.md
 technologies: # Ref: https://docs.stackspot.com/latest/docs/creators-guide/yaml/#technologies
-  - "Api"
+  - "C#"
+  - ".Net"
 types:
   - app
 inputs:
-  - label: Input Example
+  - label: String de conexão
     type: text
-    name: example
-    default: any text
-  - label: Example of number
-    type: int
-    name: any_number
-    default: "10"
-  - label: Example of list
-    type: multiselect
-    name: any_list
+    name: string_conexao
+
+  - label: Nome do banco de dados
+    type: text
+    name: nome_banco_dados
+
+  - label: Selecione o tipo da instalação do plugin
+    type: text
+    name: type_mongo_plugin_import
     items:
-      - item1
-      - item2
+      - "dll-reference"
+      - "project-reference"
+      - "file-copy"
+      - "nuget"
+
+computed-inputs:
+  base_path: "{% if global_computed_inputs.src_base_path is defined and global_computed_inputs.src_base_path != '' %}{{global_computed_inputs.src_base_path}}{% else %}{{'.'}}{% endif %}"
+
+hooks:
+
+  - type: run
+    trigger: before-render
+    working-dir: "{{computed_inputs.base_path}}/MongoProvider"
+    windows:
+      - dotnet build -c Release
+
+#configuracao do tipo de instalação do plugin
+  - type: render-templates
+    trigger: before-render
+    path: 
+    condition:
+      variable: type_mongo_plugin_import
+      operator: ==
+      value: dll-reference
+    commands:
+
+  - type: render-templates
+    trigger: before-render
+    path: 
+    condition:
+      variable: type_mongo_plugin_import
+      operator: ==
+      value: project-reference
+    commands:
+
+  - type: render-templates
+    trigger: before-render
+    path: 
+    condition:
+      variable: type_mongo_plugin_import
+      operator: ==
+      value: file-copy
+    commands:
+
+  - type: render-templates
+    trigger: before-render
+    path: 
+    condition:
+      variable: type_mongo_plugin_import
+      operator: ==
+      value: nuget
+    commands:
+
+#startup
+  - type: edit
+    trigger: before-render
+    path: "{{computed_inputs.base_path}}/Startup.cs"
+    changes:
+      - search:
+          string: "return services"
+          insert-before:
+            value: "services.AddMongoProviders();"
+          when:
+            not-exists: "services.AddMongoProviders();"
+#appsetting
+  - type: edit
+    trigger: before-render
+    path: "{{computed_inputs.base_path}}/appsettings.json"
+    changes:
+      - search:
+          string: "},"
+          insert-before:
+            snippet: snippets/mongo.txt
+          when:
+            not-exists: "mongo"
