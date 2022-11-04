@@ -1,0 +1,5 @@
+  <ItemGroup>
+    <Reference Include="MongoProvider">
+      <HintPath>../libs/MongoProvider.dll</HintPath>
+    </Reference>
+  </ItemGroup>

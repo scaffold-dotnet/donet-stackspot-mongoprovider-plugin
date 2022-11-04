@@ -35,72 +35,112 @@ inputs:
       - "nuget"
 
 computed-inputs:
+  path_plugin_project: '{{component_path | replace("\\","\/")}}/templates/src' ##Plugin path to build befere use it.
   base_path: "{% if global_computed_inputs.src_base_path is defined and global_computed_inputs.src_base_path != '' %}{{global_computed_inputs.src_base_path}}{% else %}{{'.'}}{% endif %}"
+  path_infrastructure: ""
 
 hooks:
-
+  - type: run-script
+    trigger: before-render
+    script: scripts/folder-validation.py
+  #building plugin project
   - type: run
     trigger: before-render
-    working-dir: "{{computed_inputs.base_path}}/MongoProvider"
     windows:
-      - dotnet build -c Release
-
-#configuracao do tipo de instalação do plugin
-  - type: render-templates
+      - dotnet restore {{computed_inputs.path_plugin_project}}
+      - dotnet build {{computed_inputs.path_plugin_project}} -o {{computed_inputs.path_plugin_project}}/output -c Release
+  #Plugin build and reference Dll
+  - type: run-script
     trigger: before-render
-    path: 
-    condition:
-      variable: type_mongo_plugin_import
-      operator: ==
-      value: dll-reference
-    commands:
-
-  - type: render-templates
+    script: scripts/create-folder-libs.py
+  - type: run-script
+    trigger: after-render
+    script: scripts/remove-folder.py
+  - type: edit
     trigger: before-render
-    path: 
-    condition:
-      variable: type_mongo_plugin_import
-      operator: ==
-      value: project-reference
-    commands:
+    path: ""
+    changes:
+      - search:
+          string: "</ItemGroup>"
+          insert-after:
+            snippet: snippets/mongo-providers.txt
+          when:
+            not-exists: "NOT-RENDER"
 
-  - type: render-templates
-    trigger: before-render
-    path: 
-    condition:
-      variable: type_mongo_plugin_import
-      operator: ==
-      value: file-copy
-    commands:
+  # - type: render-templates
+  #   trigger: before-render
+  #   path:
+  #   condition:
+  #     variable: type_mongo_plugin_import
+  #     operator: ==
+  #     value: dll-reference
+  #   commands:
 
-  - type: render-templates
-    trigger: before-render
-    path: 
-    condition:
-      variable: type_mongo_plugin_import
-      operator: ==
-      value: nuget
-    commands:
+  # - type: edit
+  #   trigger: before-render
+  #   path: "{{computed_inputs.base_path}}/src/{{global_inputs.project_name}}.Infrastructure/{{global_inputs.project_name}}.Infrastructure.csproj"
+  #   changes:
+  #     - search:
+  #         string: "</ItemGroup>"
+  #         insert-after:
+  #           snippet: snippets/mongo-providers.txt
+  #         when:
+  #           not-exists: "NOT-RENDER"
+# #project-reference
+#   - type: render-templates
+#     trigger: before-render
+#     path:
+#     condition:
+#       variable: type_mongo_plugin_import
+#       operator: ==
+#       value: project-reference
+#     commands:
 
-#startup
+# #file-copy
+#   - type: render-templates
+#     trigger: before-render
+#     path:
+#     condition:
+#       variable: type_mongo_plugin_import
+#       operator: ==
+#       value: file-copy
+#     commands:
+
+# #nuget
+#   - type: render-templates
+#     trigger: before-render
+#     path:
+#     condition:
+#       variable: type_mongo_plugin_import
+#       operator: ==
+#       value: nuget
+#     commands:
+
+#configuração startup
   - type: edit
     trigger: before-render
     path: "{{computed_inputs.base_path}}/Startup.cs"
     changes:
       - search:
-          string: "return services"
+          string: "using"
           insert-before:
-            value: "services.AddMongoProviders();"
+            value: "using MongoProvider;"
           when:
-            not-exists: "services.AddMongoProviders();"
-#appsetting
-  - type: edit
-    trigger: before-render
-    path: "{{computed_inputs.base_path}}/appsettings.json"
-    changes:
+            not-exists: "using MongoProvider;"
       - search:
-          string: "},"
+          string: "var app = builder.Build();"
           insert-before:
-            snippet: snippets/mongo.txt
+            value: "builder.Services.AddMongoProviders(builder.Configuration);\n"
           when:
-            not-exists: "mongo"
+            not-exists: "builder.Services.AddMongoProviders(builder.Configuration);"
+# #appsetting
+#   - type: edit
+#     trigger: before-render
+#     path: "{{computed_inputs.base_path}}/appsettings.json"
+#     changes:
+#       - search:
+#           string: "},"
+#           insert-before:
+#             snippet: snippets/mongo.txt
+#           when:
+#             not-exists: "mongo"
