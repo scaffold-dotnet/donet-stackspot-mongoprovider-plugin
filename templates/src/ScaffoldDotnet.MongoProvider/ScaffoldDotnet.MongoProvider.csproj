@@ -2,7 +2,30 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1;net5.0;net6.0;net7.0</TargetFrameworks>
+    <LangVersion>11.0</LangVersion>
+    <Authors>Daniel Oliveira</Authors>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>Scaffold;Stack Spot;Mongo Access</PackageTags>
+    <PackageProjectUrl>https://github.com/scaffold-dotnet</PackageProjectUrl>
+    <PackageIcon></PackageIcon>
+    <Title>MongoProvider</Title>
+    <Description></Description>
+    <NeutralLanguage>en</NeutralLanguage>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <RepositoryUrl>https://github.com/scaffold-dotnet/donet-stackspot-mongoprovider-plugin</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackAsTool>True</PackAsTool>
+    <EnableNETAnalyzers>True</EnableNETAnalyzers>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
