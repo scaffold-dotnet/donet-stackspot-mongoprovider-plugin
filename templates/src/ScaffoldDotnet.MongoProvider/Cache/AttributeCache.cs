@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MongoProvider.Cache
+namespace ScaffoldDotnet.MongoProvider.Cache
 {
     internal static class AttributeCache
     {

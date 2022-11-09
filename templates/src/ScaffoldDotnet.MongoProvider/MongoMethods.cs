@@ -1,6 +1,6 @@
 ﻿using MongoDB.Driver;
-using MongoProvider.Attributes;
-using MongoProvider.Cache;
+using ScaffoldDotnet.MongoProvider.Attributes;
+using ScaffoldDotnet.MongoProvider.Cache;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MongoProvider
+namespace ScaffoldDotnet.MongoProvider
 {
     public class MongoMethods<T> : IMongoMethods<T> where T : MongoEntity
     {
@@ -16,10 +16,10 @@ namespace MongoProvider
 
         public MongoMethods(IMongoAccess mongoAccess)
         {
-            this.collection = mongoAccess.GetCollection<T>(CollectionName);
+            collection = mongoAccess.GetCollection<T>(CollectionName);
         }
 
-        protected IMongoCollection<T> Collection { get { return this.collection; } }
+        protected IMongoCollection<T> Collection { get { return collection; } }
 
         public string CollectionName
         {

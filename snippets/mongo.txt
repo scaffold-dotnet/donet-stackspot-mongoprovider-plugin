@@ -1,4 +1,4 @@
   "Mongo": {
     "Conexao": "{{inputs.string_conexao}}",
-    "Banco": "stack-spot"
+    "Banco": "{{inputs.nome_banco_dados}}"
   },

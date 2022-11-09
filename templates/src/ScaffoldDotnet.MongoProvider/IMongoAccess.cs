@@ -1,6 +1,6 @@
 ﻿using MongoDB.Driver;
 
-namespace MongoProvider
+namespace ScaffoldDotnet.MongoProvider
 {
     public interface IMongoAccess
     {

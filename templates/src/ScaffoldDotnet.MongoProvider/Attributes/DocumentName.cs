@@ -1,13 +1,13 @@
 ﻿using System;
 
-namespace MongoProvider.Attributes
+namespace ScaffoldDotnet.MongoProvider.Attributes
 {
     [AttributeUsage(AttributeTargets.Class)]
-    public sealed class DocumentName : System.Attribute
+    public sealed class DocumentName : Attribute
     {
         public DocumentName(string name)
         {
-            this.Name = name;
+            Name = name;
         }
 
         public string Name { get; }

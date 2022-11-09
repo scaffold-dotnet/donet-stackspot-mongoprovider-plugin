@@ -1,4 +1,4 @@
-﻿namespace MongoProvider
+﻿namespace ScaffoldDotnet.MongoProvider
 {
     public class MongoEntity
     {

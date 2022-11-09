@@ -4,6 +4,7 @@ display-name: donet-stackspot-mongoprovider-plugin
 picture: plugin.png
 category: backend # Ref: https://docs.stackspot.com/latest/docs/creators-guide/yaml/#category
 compatibility:
+  - dotnet 7
   - dotnet 6
   - dotnet 5
   - dotnet core 3.1
@@ -29,9 +30,7 @@ inputs:
     type: text
     name: type_mongo_plugin_import
     items:
-      - "dll-reference"
-      - "project-reference"
-      - "file-copy"
+      - "dll-reference"      
       - "nuget"
 
 computed-inputs:
@@ -53,12 +52,13 @@ hooks:
   - type: run-script
     trigger: before-render
     script: scripts/create-folder-libs.py
-  - type: run-script
-    trigger: after-render
-    script: scripts/remove-folder.py
+    condition:
+      variable: type_mongo_plugin_import
+      operator: ==
+      value: dll-reference
   - type: edit
     trigger: before-render
-    path: ""
+    path: "{{global_inputs.project_name}}/{{global_inputs.project_name}}.csproj"
     changes:
       - search:
           string: "</ItemGroup>"
@@ -66,65 +66,19 @@ hooks:
             snippet: snippets/mongo-providers.txt
           when:
             not-exists: "NOT-RENDER"
-
-  # - type: render-templates
-  #   trigger: before-render
-  #   path:
-  #   condition:
-  #     variable: type_mongo_plugin_import
-  #     operator: ==
-  #     value: dll-reference
-  #   commands:
-
-  # - type: edit
-  #   trigger: before-render
-  #   path: "{{computed_inputs.base_path}}/src/{{global_inputs.project_name}}.Infrastructure/{{global_inputs.project_name}}.Infrastructure.csproj"
-  #   changes:
-  #     - search:
-  #         string: "</ItemGroup>"
-  #         insert-after:
-  #           snippet: snippets/mongo-providers.txt
-  #         when:
-  #           not-exists: "NOT-RENDER"
-# #project-reference
-#   - type: render-templates
-#     trigger: before-render
-#     path:
-#     condition:
-#       variable: type_mongo_plugin_import
-#       operator: ==
-#       value: project-reference
-#     commands:
-
-# #file-copy
-#   - type: render-templates
-#     trigger: before-render
-#     path:
-#     condition:
-#       variable: type_mongo_plugin_import
-#       operator: ==
-#       value: file-copy
-#     commands:
-
-# #nuget
-#   - type: render-templates
-#     trigger: before-render
-#     path:
-#     condition:
-#       variable: type_mongo_plugin_import
-#       operator: ==
-#       value: nuget
-#     commands:
-
-#configuração startup
+  #clean template file copy
+  - type: run-script
+    trigger: after-render
+    script: scripts/remove-folder.py
+  #configuração startup
   - type: edit
     trigger: before-render
-    path: "{{computed_inputs.base_path}}/Startup.cs"
+    path: "{{global_inputs.project_name}}/Program.cs"
     changes:
       - search:
           string: "using"
           insert-before:
-            value: "using MongoProvider;"
+            value: "using MongoProvider;\n"
           when:
             not-exists: "using MongoProvider;"
       - search:
@@ -133,14 +87,19 @@ hooks:
             value: "builder.Services.AddMongoProviders(builder.Configuration);\n"
           when:
             not-exists: "builder.Services.AddMongoProviders(builder.Configuration);"
-# #appsetting
-#   - type: edit
-#     trigger: before-render
-#     path: "{{computed_inputs.base_path}}/appsettings.json"
-#     changes:
-#       - search:
-#           string: "},"
-#           insert-before:
-#             snippet: snippets/mongo.txt
-#           when:
-#             not-exists: "mongo"
+  #appsetting
+  - type: edit
+    trigger: before-render
+    path: "{{global_inputs.project_name}}/appsettings.json"
+    changes:
+      - search:
+          string: "},"
+          insert-after:
+            snippet: snippets/mongo.txt
+          when:
+            not-exists: "\"Mongo\""
+  #format the code
+  - type: run
+    trigger: after-render    
+    commands:
+      - dotnet dotnet-format -f {{global_inputs.project_name}}  --include-generated

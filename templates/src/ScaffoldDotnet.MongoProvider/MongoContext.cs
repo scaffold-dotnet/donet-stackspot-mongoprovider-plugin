@@ -1,7 +1,7 @@
 ﻿using MongoDB.Driver;
 using System;
 
-namespace MongoProvider
+namespace ScaffoldDotnet.MongoProvider
 {
     public class MongoContext : IMongoAccess
     {
