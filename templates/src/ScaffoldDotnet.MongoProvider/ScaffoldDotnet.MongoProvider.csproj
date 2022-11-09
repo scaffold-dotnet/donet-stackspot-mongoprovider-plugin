@@ -16,7 +16,7 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <RepositoryUrl>https://github.com/scaffold-dotnet/donet-stackspot-mongoprovider-plugin</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackAsTool>True</PackAsTool>
+    <PackAsTool>False</PackAsTool>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
   </PropertyGroup>
 
