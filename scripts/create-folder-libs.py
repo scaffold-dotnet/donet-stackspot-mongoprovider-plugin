@@ -4,7 +4,7 @@ from templateframework.metadata import Metadata
 
 def run(metadata: Metadata = None):
     try:
-        lib_path =  os.path.join(metadata.component_path, "templates", "src", "output", "MongoProvider.dll") 
+        lib_path =  os.path.join(metadata.component_path, "templates", "src", "output", "ScaffoldDotnet.MongoProvider.dll") 
         libs_folder = os.path.join(metadata.target_path, "libs")
         isExist = os.path.exists(libs_folder)
 

@@ -7,7 +7,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>Scaffold;Stack Spot;Mongo Access</PackageTags>
     <PackageProjectUrl>https://github.com/scaffold-dotnet</PackageProjectUrl>
-    <PackageIcon></PackageIcon>
+    <PackageIcon>package_image.png</PackageIcon>
     <Title>MongoProvider</Title>
     <Description></Description>
     <NeutralLanguage>en</NeutralLanguage>
@@ -21,6 +21,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\..\..\assets\package_image.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
     <None Include="..\..\..\README.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>

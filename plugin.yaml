@@ -78,9 +78,9 @@ hooks:
       - search:
           string: "using"
           insert-before:
-            value: "using MongoProvider;\n"
+            value: "using ScaffoldDotnet.MongoProvider;\n"
           when:
-            not-exists: "using MongoProvider;"
+            not-exists: "using ScaffoldDotnet.MongoProvider;"
       - search:
           string: "var app = builder.Build();"
           insert-before:
