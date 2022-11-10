@@ -56,3 +56,6 @@ $RECYCLE.BIN/
 output
 output/*
 **/output/*
+
+**.sarif
+**.sarif/*

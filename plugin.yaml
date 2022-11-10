@@ -30,25 +30,29 @@ inputs:
     type: text
     name: type_mongo_plugin_import
     items:
-      - "dll-reference"      
+      - "dll-reference"
       - "nuget"
 
 computed-inputs:
-  path_plugin_project: '{{component_path | replace("\\","\/")}}/templates/src' ##Plugin path to build befere use it.
+  path_plugin_project: '{{component_path | replace("\\","\/")}}/templates/src' ##Plugin path to build before use it.
   base_path: "{% if global_computed_inputs.src_base_path is defined and global_computed_inputs.src_base_path != '' %}{{global_computed_inputs.src_base_path}}{% else %}{{'.'}}{% endif %}"
   path_infrastructure: ""
+  package: "ScaffoldDotnet.MongoProvider"
 
 hooks:
   - type: run-script
     trigger: before-render
     script: scripts/folder-validation.py
-  #building plugin project
+  #Plugin build and reference Dll
   - type: run
     trigger: before-render
+    condition:
+      variable: type_mongo_plugin_import
+      operator: ==
+      value: dll-reference
     windows:
       - dotnet restore {{computed_inputs.path_plugin_project}}
       - dotnet build {{computed_inputs.path_plugin_project}} -o {{computed_inputs.path_plugin_project}}/output -c Release
-  #Plugin build and reference Dll
   - type: run-script
     trigger: before-render
     script: scripts/create-folder-libs.py
@@ -66,11 +70,21 @@ hooks:
             snippet: snippets/mongo-providers.txt
           when:
             not-exists: "NOT-RENDER"
+  #Plugin nuget
+  - type: run
+    trigger: before-render
+    working-dir: "{{target_path}}/{{global_inputs.project_name}}"
+    condition:
+      variable: type_mongo_plugin_import
+      operator: ==
+      value: nuget
+    windows:
+      - dotnet add package {{computed_inputs.package}}
   #clean template file copy
   - type: run-script
     trigger: after-render
     script: scripts/remove-folder.py
-  #configuração startup
+  #startup
   - type: edit
     trigger: before-render
     path: "{{global_inputs.project_name}}/Program.cs"
@@ -97,9 +111,9 @@ hooks:
           insert-after:
             snippet: snippets/mongo.txt
           when:
-            not-exists: "\"Mongo\""
+            not-exists: '"Mongo"'
   #format the code
   - type: run
-    trigger: after-render    
+    trigger: after-render
     commands:
       - dotnet dotnet-format -f {{global_inputs.project_name}}  --include-generated
